@@ -23,10 +23,16 @@ import cozmo
 from cozmo.util import distance_mm, speed_mmps, degrees
 
 def main(robot: cozmo.robot.Robot):
-    say_something(robot,"hello")
-    find_face(robot)
-    play_animation(robot,cozmo.anim.Triggers.CodeLabEnergyEat)
+    
+    wheelie(robot)
+    # say_something(robot,"hello")
+    # find_face(robot)
+    # play_animation(robot,cozmo.anim.Triggers.CodeLabEnergyEat)
+    # turn_around(robot,720)
     #play_faces(robot,cozmo.faces.FACIAL_EXPRESSION_HAPPY)
+
+def wheelie(robot):
+ robot.pop_a_wheelie(robot.world.get_light_cube(1)).wait_for_completed()
 
 def say_something(robot: cozmo.robot.Robot,thingToSay: str):
     print(thingToSay)
@@ -41,6 +47,9 @@ def play_animation(robot,animation):
     print("play_animation started")
     robot.play_anim_trigger(animation).wait_for_completed()
     print("play_animation ended")
+    
+def turn_around(robot,degree):
+    robot.turn_in_place(cozmo.util.Angle(degrees=degree))
     
 def play_faces(robot,expression):
     print("play_faces started")
