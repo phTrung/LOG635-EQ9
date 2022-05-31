@@ -20,49 +20,173 @@ Make Cozmo say 'Hello World' in this simple Cozmo SDK example program.
 '''
 
 from ctypes import resize
+import os
 import time
 import cozmo
-from cozmo.util import distance_mm, speed_mmps, degrees
+from cozmo.util import distance_mm, speed_mmps, degrees, Pose
 from cozmo.objects import CustomObject, CustomObjectMarkers, CustomObjectTypes, ObservableElement, ObservableObject
 from PIL import Image
 
+liveCamera = False
 
 def main(robot: cozmo.robot.Robot):
-    
-    # say_something(robot,"hello")
-    greeting(robot)
-    # find_face(robot)
-    # play_animation(robot,cozmo.anim.Triggers.CodeLabEnergyEat)
-    # turn_around(robot,720)
-    # play_faces(robot,cozmo.faces.FACIAL_EXPRESSION_HAPPY)
+    buildObjects(robot)
+    # customObject(robot)
+    # pushpush(robot)
+    # BouteilleEau(robot)
+    # greeting(robot)
+    # find_Bottle(robot)
     # wheelie(robot)
+    # find_face(robot)
     # stack(robot)
     # unstack(robot)
-    find_Bottle(robot)
+    
+def buildObjects(robot):
+    pushpush = robot.world.define_custom_cube(CustomObjectTypes.CustomType00,
+                                        CustomObjectMarkers.Circles4, # right
+                                        30,30, 30, True)
+    
+    if (pushpush is not None):
+        print("Pushpush defined successfully!")
+    else:
+        print("One or more object definitions failed!")
+        return
+    bouteille = robot.world.define_custom_cube(CustomObjectTypes.CustomType01,
+                                        CustomObjectMarkers.Triangles4, # right
+                                        30,30, 30, True)
+    
+    if (bouteille is not None):
+        print("bouteille defined successfully!")
+    else:
+        print("One or more object definitions failed!")
+        return
+    bread = robot.world.define_custom_cube(CustomObjectTypes.CustomType02,
+                                        CustomObjectMarkers.Circles2, # right
+                                        30,30, 30, True)
+    
+    if (bread is not None):
+        print("bread defined successfully!")
+    else:
+        print("One or more object definitions failed!")
+        return
+    
+    case = robot.world.define_custom_cube(CustomObjectTypes.CustomType03,
+                                        CustomObjectMarkers.Circles3, # right
+                                        30,30, 30, True)
+    
+    if (case is not None):
+        print("case defined successfully!")
+    else:
+        print("One or more object definitions failed!")
+        return
+    
+    laptop = robot.world.define_custom_cube(CustomObjectTypes.CustomType04,
+                                        CustomObjectMarkers.Hexagons3, # right
+                                        30,30, 30, True)
+    
+    if (laptop is not None):
+        print("case defined successfully!")
+    else:
+        print("One or more object definitions failed!")
+        return
+    lookaround(robot)
+    
+def lookaround(robot):
+    lookaround = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+    cubes = robot.world.wait_until_observe_num_objects(num=2, object_type=CustomObject, timeout=60)
+    lookaround.stop()
+    
+    for cube in cubes:
+        print(cube.object_type)
+        if (cube.object_type == CustomObjectTypes.CustomType00):
+            pushpush(robot,cube)
+            print('Found spray')
+        if (cube.object_type == CustomObjectTypes.CustomType01):
+            pushpush(robot,cube)
+            print('Found bread')
+        if (cube.object_type == CustomObjectTypes.CustomType02):
+            pushpush(robot,cube)
+            print('Found Bread2')
+        if (cube.object_type == CustomObjectTypes.CustomType03):
+            pushpush(robot,cube)
+            print('Found my case')
+        if (cube.object_type == CustomObjectTypes.CustomType04):
+            pushpush(robot,cube)
+            say_something('beepboop')
+            print('Beepboop')
+    
+def pushpush(robot: cozmo.robot.Robot,cubes):
+# Gestionnaires d'évennements à chaque fois que Cozmo
+    # vois ou arrète de voir un objet
+
+    
+    save_photo(robot,'Circles','Circles2')
+
+    print("Found object")
+    print(cubes.pose)
+    robot.say_text("Time to clean").wait_for_completed()
+    x1=cubes.pose.position.x-300
+    y1=cubes.pose.position.y
+    z1=cubes.pose.position.z
+    action = robot.go_to_pose(Pose(x1,y1,z1,angle_z=degrees(0)),relative_to_robot=False)
+    action.wait_for_completed()
+    print("Completed action: result = %s" % action)
+    print("Done.")
+
+def BouteilleEau(robot: cozmo.robot.Robot):
+# Gestionnaires d'évennements à chaque fois que Cozmo
+    # vois ou arrète de voir un objet
+
+
+    lookaround = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+    
+    cubes = robot.world.wait_until_observe_num_objects(num=2, object_type=CustomObject, timeout=60)
+    lookaround.stop()
+    save_photo(robot,'Circle','Circle5')
+    
+    if len(cubes) > 0:
+        print("Found object")
+        print(cubes[0].pose)
+        robot.say_text("I'm Thristy").wait_for_completed()
+        x1=cubes[0].pose.position.x-300
+        y1=cubes[0].pose.position.y
+        z1=cubes[0].pose.position.z
+        action = robot.go_to_pose(Pose(x1,y1,z1,angle_z=degrees(0)),relative_to_robot=False)
+        action.wait_for_completed()
+        print("Completed action: result = %s" % action)
+        print("Done.")
+    else:
+        print("Cannot locate custom box")
+        time.sleep(0.1)
+
     
 def greeting(robot):
-    
     cleaner = robot.world.define_custom_cube(CustomObjectTypes.CustomType02,
                                         CustomObjectMarkers.Triangles5,
                                         30, 
                                         30, 30, True)
-    lookaround = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
-    cubes = robot.world.wait_until_observe_num_objects(num=1, object_type=CustomObject, timeout=60)
-    lookaround.stop()
-    say_something(robot,"Hello")
-
-
-def find_Bottle(robot):
     bottle = robot.world.define_custom_cube(CustomObjectTypes.CustomType02,
                                         CustomObjectMarkers.Circles4,
                                         30, 
                                         30, 30, True)
+    print(cleaner)
+    lookaround = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+    cubes = robot.world.wait_until_observe_num_objects(num=1, object_type=CustomObject, timeout=60)
+    lookaround.stop()
+    say_something(robot,"Hello")
+    print("greeting")
+    print(cubes)
+    
+
+def find_Bottle(robot):
     print('hi')
     lookaround = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
     cubes1 = robot.world.wait_until_observe_num_objects(num=1, object_type=CustomObject, timeout=60)
     lookaround.stop()
     say_something(robot,"I'm Thirsty")
-    # print(cubes[0])
+    turn_around(robot,720)
+    print("bottls")
+    print(cubes1)
 
 def say_something(robot: cozmo.robot.Robot,thingToSay: str):
     print(thingToSay)
@@ -87,8 +211,11 @@ def play_faces(robot,expression):
     img =  Image.open('./photos/Cercles/cercles2/animal.jpg')
     resized = img.resize(cozmo.oled_face.dimensions(), Image.BICUBIC)
     face = cozmo.oled_face.convert_image_to_screen_data(resized, invert_image=True)
-    
     robot.display_oled_face_image(face,2000).wait_for_completed()
+    play_animation(robot,cozmo.anim.Triggers.CodeLabEnergyEat)
+
+    play_animation(robot,cozmo.anim.Triggers.CodeLabEnergyEat)
+
         
 
 def find_face(robot: cozmo.robot.Robot):
@@ -160,12 +287,50 @@ def unstack(robot:cozmo.robot.Robot):
 def wheelie(robot: cozmo.robot.Robot):
     print('Start wheelie')
     robot.pop_a_wheelie(robot.world.get_light_cube(1)).wait_for_completed()
+    
     robot.drive_wheels(-100,100,l_wheel_acc=999,r_wheel_acc=999,duration=2)
     robot.drive_wheels(100,-100,l_wheel_acc=999,r_wheel_acc=999,duration=2)
     robot.drive_wheels(-100,100,l_wheel_acc=999,r_wheel_acc=999,duration=2)
     robot.drive_wheels(500,500,l_wheel_acc=999,r_wheel_acc=999,duration=.75)
     robot.drive_wheels(-500,-500,l_wheel_acc=999,r_wheel_acc=999,duration=.2)
     print('End wheelie')
+    play_faces(robot,cozmo.faces.FACIAL_EXPRESSION_HAPPY)
+
+def save_photo(robot: cozmo.robot.Robot, shapeFamily, shapeId):
+    # Chaque fois que Cozmo voit une "nouvelle" image, prends une photo
+    robot.add_event_handler(cozmo.world.EvtNewCameraImage, on_new_camera_image)
+    
+    # Indiquer le dossier pour stocker les photos
+    global familyDirectory, shapeDirectory
+    familyDirectory = f"{shapeFamily}"
+    shapeDirectory = f"{shapeId}"
+    if not os.path.exists('Photos'):
+        os.makedirs('Photos')
+    if not os.path.exists(f'Photos/{familyDirectory}'):
+        os.makedirs(f'Photos/{familyDirectory}')
+    if not os.path.exists(f'Photos/{familyDirectory}/{shapeDirectory}'):
+        os.makedirs(f'Photos/{familyDirectory}/{shapeDirectory}')
+
+    take_photo(robot)
+
+def take_photo(robot: cozmo.robot.Robot):
+    global liveCamera    
+    
+    # Assurez-vous que la tête et le bras de Cozmo sont à un niveau raisonnable
+    robot.set_head_angle(degrees(10.0)).wait_for_completed()
+    robot.set_lift_height(0.0).wait_for_completed()
+        
+    liveCamera = True
+    time.sleep(0.1)    
+    liveCamera = False   
+
+def on_new_camera_image(evt, **kwargs):    
+    global liveCamera
+    if liveCamera:
+        print("Cozmo is taking a photo")
+        pilImage = kwargs['image'].raw_image
+        global familyDirectory, shapeDirectory
+        pilImage.save(f"photos/{familyDirectory}/{shapeDirectory}/photo-{kwargs['image'].image_number}.jpg", "JPEG")
 
 robot = cozmo.robot.Robot
 cozmo.run_program(main, use_3d_viewer=True, use_viewer=True)
