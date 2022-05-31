@@ -19,20 +19,50 @@
 Make Cozmo say 'Hello World' in this simple Cozmo SDK example program.
 '''
 
+from ctypes import resize
+import time
 import cozmo
 from cozmo.util import distance_mm, speed_mmps, degrees
+from cozmo.objects import CustomObject, CustomObjectMarkers, CustomObjectTypes, ObservableElement, ObservableObject
+from PIL import Image
+
 
 def main(robot: cozmo.robot.Robot):
     
-    wheelie(robot)
     # say_something(robot,"hello")
+    greeting(robot)
     # find_face(robot)
     # play_animation(robot,cozmo.anim.Triggers.CodeLabEnergyEat)
     # turn_around(robot,720)
-    #play_faces(robot,cozmo.faces.FACIAL_EXPRESSION_HAPPY)
+    # play_faces(robot,cozmo.faces.FACIAL_EXPRESSION_HAPPY)
+    # wheelie(robot)
+    # stack(robot)
+    # unstack(robot)
+    find_Bottle(robot)
+    
+def greeting(robot):
+    
+    cleaner = robot.world.define_custom_cube(CustomObjectTypes.CustomType02,
+                                        CustomObjectMarkers.Triangles5,
+                                        30, 
+                                        30, 30, True)
+    lookaround = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+    cubes = robot.world.wait_until_observe_num_objects(num=1, object_type=CustomObject, timeout=60)
+    lookaround.stop()
+    say_something(robot,"Hello")
 
-def wheelie(robot):
- robot.pop_a_wheelie(robot.world.get_light_cube(1)).wait_for_completed()
+
+def find_Bottle(robot):
+    bottle = robot.world.define_custom_cube(CustomObjectTypes.CustomType02,
+                                        CustomObjectMarkers.Circles4,
+                                        30, 
+                                        30, 30, True)
+    print('hi')
+    lookaround = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+    cubes1 = robot.world.wait_until_observe_num_objects(num=1, object_type=CustomObject, timeout=60)
+    lookaround.stop()
+    say_something(robot,"I'm Thirsty")
+    # print(cubes[0])
 
 def say_something(robot: cozmo.robot.Robot,thingToSay: str):
     print(thingToSay)
@@ -49,13 +79,17 @@ def play_animation(robot,animation):
     print("play_animation ended")
     
 def turn_around(robot,degree):
-    robot.turn_in_place(cozmo.util.Angle(degrees=degree))
+    robot.turn_in_place(cozmo.util.Angle(degrees=degree)).wait_for_completed()
     
 def play_faces(robot,expression):
-    print("play_faces started")
-    robot.play_anim_trigger(expression).wait_for_completed()    
-    print("play_faces ended")
-
+    raw_images= [(),]
+    faces = []
+    img =  Image.open('./photos/Cercles/cercles2/animal.jpg')
+    resized = img.resize(cozmo.oled_face.dimensions(), Image.BICUBIC)
+    face = cozmo.oled_face.convert_image_to_screen_data(resized, invert_image=True)
+    
+    robot.display_oled_face_image(face,2000).wait_for_completed()
+        
 
 def find_face(robot: cozmo.robot.Robot):
     print("find_face started")
@@ -78,43 +112,60 @@ def stack(robot: cozmo.robot.Robot):
     cubes = robot.world.wait_until_observe_num_objects(num=2, object_type=cozmo.objects.LightCube, timeout=60)
     lookaround.stop()
 
-    if len(cubes) < 2:
-        print("Error: need 2 Cubes but only found", len(cubes), "Cube(s)")
-    else:
-        # Essai de ramasser le 1er cube
-        current_action = robot.pickup_object(cubes[0], num_retries=3)
-        current_action.wait_for_completed()
-        if current_action.has_failed:
-            code, reason = current_action.failure_reason
-            result = current_action.result
-            print("Pickup Cube failed: code=%s reason='%s' result=%s" % (code, reason, result))
-            return
+    cube1 = robot.world.get_light_cube(cozmo.objects.LightCube1Id)
+    cube2 = robot.world.get_light_cube(cozmo.objects.LightCube2Id)
 
-        # Maintenant, essai de placer ce cube sur le 2ème.
-        current_action = robot.place_on_object(cubes[1], num_retries=3)
-        current_action.wait_for_completed()
-        if current_action.has_failed:
-            code, reason = current_action.failure_reason
-            result = current_action.result
-            print("Place On Cube failed: code=%s reason='%s' result=%s" % (code, reason, result))
-            return
+   
+    # Essai de ramasser le 1er cube
+    current_action = robot.pickup_object(cube1, num_retries=3)
+    current_action.wait_for_completed()
+    if current_action.has_failed:
+        code, reason = current_action.failure_reason
+        result = current_action.result
+        print("Pickup Cube failed: code=%s reason='%s' result=%s" % (code, reason, result))
+        return
 
-        print("Cozmo successfully stacked 2 blocks!")
+    # Maintenant, essai de placer ce cube sur le 2ème.
+    current_action = robot.place_on_object(cube2, num_retries=3)
+    current_action.wait_for_completed()
+    if current_action.has_failed:
+        code, reason = current_action.failure_reason
+        result = current_action.result
+        print("Place On Cube failed: code=%s reason='%s' result=%s" % (code, reason, result))
+        return
+
+    print("Cozmo successfully stacked 2 blocks!")
+    robot.drive_wheels(-500,-500,l_wheel_acc=999,r_wheel_acc=999,duration=1)
+        
     
 def unstack(robot:cozmo.robot.Robot):
     lookaround = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
     cubes = robot.world.wait_until_observe_num_objects(num=2, object_type=cozmo.objects.LightCube, timeout=60)
     lookaround.stop()
 
-    if len(cubes) < 2:
-        print("Error: need 2 Cubes but only found", len(cubes), "Cube(s)")
-    else:
-        robot.pickup_object(cubes[1], num_retries=3).wait_for_completed()
-        robot.turn_in_place(degrees(90)).wait_for_completed()
-        robot.place_object_on_ground_here(cubes[1])
+
+    cube1 = robot.world.get_light_cube(cozmo.objects.LightCube1Id)
+    cube2 = robot.world.get_light_cube(cozmo.objects.LightCube2Id)
+    
+    
+    print(cube1)
+    print(cube2)
+    robot.pickup_object(cube1, num_retries=3).wait_for_completed()
+    robot.turn_in_place(degrees(90)).wait_for_completed()
+    robot.place_object_on_ground_here(cube1)
 
     while True:
         time.sleep(0.1)
 
+def wheelie(robot: cozmo.robot.Robot):
+    print('Start wheelie')
+    robot.pop_a_wheelie(robot.world.get_light_cube(1)).wait_for_completed()
+    robot.drive_wheels(-100,100,l_wheel_acc=999,r_wheel_acc=999,duration=2)
+    robot.drive_wheels(100,-100,l_wheel_acc=999,r_wheel_acc=999,duration=2)
+    robot.drive_wheels(-100,100,l_wheel_acc=999,r_wheel_acc=999,duration=2)
+    robot.drive_wheels(500,500,l_wheel_acc=999,r_wheel_acc=999,duration=.75)
+    robot.drive_wheels(-500,-500,l_wheel_acc=999,r_wheel_acc=999,duration=.2)
+    print('End wheelie')
+
 robot = cozmo.robot.Robot
-cozmo.run_program(main)
+cozmo.run_program(main, use_3d_viewer=True, use_viewer=True)
