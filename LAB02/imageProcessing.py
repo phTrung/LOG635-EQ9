@@ -7,6 +7,7 @@ import imutils
 import random
 import pickle
 import ImageClassifier
+from tabulate import tabulate
 
 WIDTH = 160
 HEIGHT = 120
@@ -46,23 +47,15 @@ def detect_shape(contour):
     return shape
 
 
-def formatPic(folder):
+def formatFolderPic(folder):
     # Resize, ignoring aspect ratio
     for path in os.listdir(folder):
         #print(folder)
         print(str(path))
-        image = cv2.imread(str(folder) + "/" + str(path))
-        #resized = cv2.resize(image, (WIDTH, HEIGHT))
-        bitwise = cv2.bitwise_not(image)
-        resized = cv2.resize(bitwise, (WIDTH, HEIGHT))
-        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        thresh = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY)[1]
+        picPath = str(folder) + "/" + str(path)
+        formatPic(picPath)
 
-        imageArray = np.array(thresh)
 
-        print(imageArray)
-        imageArray[imageArray == 255] = 1
 
         #plt.imshow(thresh, cmap='gray')
 
@@ -71,14 +64,22 @@ def formatPic(folder):
 
         #cv2.imwrite(folder + "_resized/" + os.path.basename(path),thresh)
 
-# def createResizedFolder(folder):
-#     for path in os.listdir(folder):
-#         os.mkdir(str(folder) + "/" + str(path))
+def formatPic(path):
+    image = cv2.imread(path)
+    # resized = cv2.resize(image, (WIDTH, HEIGHT))
+    bitwise = cv2.bitwise_not(image)
+    resized = cv2.resize(bitwise, (WIDTH, HEIGHT))
+    gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    thresh = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY)[1]
 
+    imageArray = np.array(thresh)
+    imageArray[imageArray == 255] = 1
 
+    print("A")
 
 def main():
-    formatPic("EnsembleA_H2022/Cercles/Cercle2")
+    formatFolderPic("EnsembleA_H2022/Cercles/Cercle2")
 
 if __name__ == "__main__":
     main()
