@@ -49,7 +49,7 @@ def detect_shape(contour):
 def formatPic(folder):
     # Resize, ignoring aspect ratio
     for path in os.listdir(folder):
-        print(folder)
+        #print(folder)
         print(str(path))
         image = cv2.imread(str(folder) + "/" + str(path))
         #resized = cv2.resize(image, (WIDTH, HEIGHT))
@@ -59,7 +59,17 @@ def formatPic(folder):
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
         thresh = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY)[1]
 
-        cv2.imwrite(folder + "_resized/" + os.path.basename(path),thresh)
+        imageArray = np.array(thresh)
+
+        print(imageArray)
+        imageArray[imageArray == 255] = 1
+
+        #plt.imshow(thresh, cmap='gray')
+
+        # cnts = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # cnts = imutils.grab_contours(cnts)
+
+        #cv2.imwrite(folder + "_resized/" + os.path.basename(path),thresh)
 
 # def createResizedFolder(folder):
 #     for path in os.listdir(folder):
