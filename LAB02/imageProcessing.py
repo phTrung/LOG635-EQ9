@@ -8,6 +8,7 @@ import random
 import pickle
 import ImageClassifier
 from tabulate import tabulate
+from squares import find_squares
 
 WIDTH = 160
 HEIGHT = 120
@@ -50,19 +51,16 @@ def detect_shape(contour):
 def formatFolderPic(folder):
     # Resize, ignoring aspect ratio
     for path in os.listdir(folder):
-        #print(folder)
+        # print(folder)
         print(str(path))
         picPath = str(folder) + "/" + str(path)
         formatPic(picPath)
 
-
-
-        #plt.imshow(thresh, cmap='gray')
+        # plt.imshow(thresh, cmap='gray')
 
         # cnts = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         # cnts = imutils.grab_contours(cnts)
 
-        #cv2.imwrite(folder + "_resized/" + os.path.basename(path),thresh)
 
 def formatPic(path):
     image = cv2.imread(path)
@@ -73,13 +71,27 @@ def formatPic(path):
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     thresh = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY)[1]
 
+    # detect contour carre
+    squares = find_squares(thresh)
+    cv2.drawContours(resized, squares, -1, (0, 255, 0), 2)
+
+    cropped_image = thresh
+    if len(squares) != 0:
+        # crop the grayscale image with the contours
+        cropped_image = cropped_image[(squares[0].min(axis=1)).min():(squares[0].max(axis=1)).max(), (squares[0].min(axis=0)).min(): (squares[0].max(axis=0)).max()]
+        # cv2.imshow('image1', cropped_image)
+        # cv2.waitKey(0)
+    cv2.imwrite("EnsembleA_H2022/Cercles/Cercle2" + "_resized/" + os.path.basename(path), cropped_image)
+
     imageArray = np.array(thresh)
     imageArray[imageArray == 255] = 1
 
     print("A")
 
+
 def main():
     formatFolderPic("EnsembleA_H2022/Cercles/Cercle2")
+
 
 if __name__ == "__main__":
     main()
