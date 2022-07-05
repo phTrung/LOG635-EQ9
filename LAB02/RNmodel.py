@@ -84,16 +84,14 @@ def predict(x, w1, w2):
     elif k == 1:
         print("Image is Cercle4.")
     elif k == 2:
-        print("Image is Cercle4.")
-    elif k == 3:
         print("Image is Diamant2.")
-    elif k == 4:
+    elif k == 3:
         print("Image is Diamant4.")
-    elif k == 5:
+    elif k == 4:
         print("Image is Hexagone2.")
-    elif k == 6:
+    elif k == 5:
         print("Image is Hexagone4.")
-    elif k == 7:
+    elif k == 6:
         print("Image is Triangle2.")
     else:
         print("Image is Triangle4.")

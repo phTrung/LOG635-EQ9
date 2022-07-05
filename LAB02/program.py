@@ -15,7 +15,7 @@ def main():
     w2 = RNmodel.random_weights(2000, 8)
     print(w1, "\n\n", w2)
 
-    acc, losss, w1, w2 = RNmodel.train(X, Y, w1, w2, 0.01, 10)
+    acc, loss, w1, w2 = RNmodel.train(X, Y, w1, w2, 0.01, 10)
     RNmodel.predict(X[1], w1, w2)
 
 if __name__ == "__main__":
