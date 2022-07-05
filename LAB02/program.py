@@ -11,8 +11,8 @@ def main():
     # labels
     Y = np.identity(8)
 
-    w1 = RNmodel.generate_wt(10000, 2000)
-    w2 = RNmodel.generate_wt(2000, 8)
+    w1 = RNmodel.random_weights(10000, 2000)
+    w2 = RNmodel.random_weights(2000, 8)
     print(w1, "\n\n", w2)
 
     acc, losss, w1, w2 = RNmodel.train(X, Y, w1, w2, 0.01, 10)

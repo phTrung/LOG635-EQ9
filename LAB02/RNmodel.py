@@ -6,7 +6,8 @@ from matplotlib import pyplot as plt
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
-def f_forward(x, w1, w2):
+
+def forward_propagation(x, w1, w2):
     # couche cache
     z1 = x.dot(w1)
     a1 = sigmoid(z1)
@@ -17,38 +18,36 @@ def f_forward(x, w1, w2):
     return a2
 
 
-# initializing the weights randomly
-def generate_wt(x, y):
+# generer les weights aléatoirement
+def random_weights(x, y):
     l = []
     for i in range(x * y):
         l.append(np.random.randn())
     return np.array(l).reshape(x, y)
 
 
-# Fonction de coût
+# Fonction de coût se basant sur Mean squared error (MSE)
 def loss(out, Y):
     s = (np.square(out - Y))
     s = np.sum(s) / 2 * len(Y)
     return s
 
 
-# Back propagation of error
-def back_prop(x, y, w1, w2, learning_rate):
-    # hidden layer
-    z1 = x.dot(w1)  # input from layer 1
-    a1 = sigmoid(z1)  # output of layer 2
+# Algorithme de rétropropagation pour les erreurs
+def back_propagation(x, y, w1, w2, learning_rate):
+    # couche cache
+    z1 = x.dot(w1)
+    a1 = sigmoid(z1)
 
-    # Output layer
-    z2 = a1.dot(w2)  # input of out layer
-    a2 = sigmoid(z2)  # output of out layer
+    # couche de sortie
+    z2 = a1.dot(w2)
+    a2 = sigmoid(z2)
 
     d2 = (a2 - y)
-    #d1 = np.multiply(np.dot(w2.transpose(), d2), 1 - np.power(a1, 2))
     d1 = np.multiply((w2.dot((d2.transpose()))).transpose(),
                      (np.multiply(a1, 1 - a1)))
 
-    # Gradient descent to update weights
-
+    # Gradient descent pour mettre à jour les weights
     d_W2 = a1.transpose().dot(d2)
     d_W1 = x.transpose().dot(d1)
     w1 = w1 - (learning_rate * d_W1)
@@ -57,15 +56,15 @@ def back_prop(x, y, w1, w2, learning_rate):
     return w1, w2
 
 
-def train(x, Y, w1, w2, alpha=0.01, num_iterations=10):
+def train(x, Y, w1, w2, learning_rate=0.01, num_iterations=10):
     acc = []
     losss = []
     for j in range(num_iterations):
         l = []
         for i in range(len(x)):
-            out = f_forward(x[i], w1, w2)
+            out = forward_propagation(x[i], w1, w2)
             l.append((loss(out, Y[i])))
-            w1, w2 = back_prop(x[i], Y[i], w1, w2, alpha)
+            w1, w2 = back_propagation(x[i], Y[i], w1, w2, learning_rate)
         print("epochs:", j + 1, "======== acc:", (1 - (sum(l) / len(x))) * 100)
         acc.append((1 - (sum(l) / len(x))) * 100)
         losss.append(sum(l) / len(x))
@@ -73,7 +72,7 @@ def train(x, Y, w1, w2, alpha=0.01, num_iterations=10):
 
 
 def predict(x, w1, w2):
-    output = f_forward(x, w1, w2)
+    output = forward_propagation(x, w1, w2)
     maxm = 0
     k = 0
     for i in range(len(output[0])):
