@@ -1,6 +1,6 @@
 import numpy as np
 import RNmodel
-import KNN
+import KNNmodel
 import imageProcessing
 
 
