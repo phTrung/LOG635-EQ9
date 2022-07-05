@@ -1,12 +1,12 @@
 import numpy as np
-
 import RNmodel
+import KNN
 import imageProcessing
 
 
 def main():
     #dataset
-    X = imageProcessing.formatFolderPic("EnsembleB")
+    X = imageProcessing.formatFolderPic("LAB02/EnsembleB")
     print(len(X))
     # labels
     Y = np.identity(8)
@@ -17,6 +17,8 @@ def main():
 
     acc, loss, w1, w2 = RNmodel.train(X, Y, w1, w2, 0.01, 10)
     RNmodel.predict(X[1], w1, w2)
+    KNN.run(X,Y)
+    
 
 if __name__ == "__main__":
     main()
