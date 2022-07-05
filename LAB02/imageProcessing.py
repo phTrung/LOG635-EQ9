@@ -18,74 +18,12 @@ from tabulate import tabulate
 
 from squares import find_squares
 
+WIDTH = 100
 
-WIDTH = 160
-
-HEIGHT = 120
-
-
-
-def detect_shape(contour):
-
-    # initialize the shape name and approximate the contour
-
-    shape = "unidentified"
-
-    peri = cv2.arcLength(contour, True)
-
-    approx = cv2.approxPolyDP(contour, 0.04 * peri, True)
-
-
-    # if the shape is a triangle, it will have 3 vertices
-
-    if len(approx) == 3:
-
-        shape = "triangle"
-
-
-    # if the shape has 4 vertices, it is either a square or
-
-    # a rectangle
-
-    elif len(approx) == 4:
-
-        # compute the bounding box of the contour and use the
-
-        # bounding box to compute the aspect ratio
-
-        (x, y, w, h) = cv2.boundingRect(approx)
-
-        ar = w / float(h)
-
-
-        # a square will have an aspect ratio that is approximately
-
-        # equal to one, otherwise, the shape is a rectangle
-
-        shape = "square" if ar >= 0.95 and ar <= 1.05 else "diamond"
-
-
-    # if the shape is a pentagon, it will have 5 vertices
-
-    elif len(approx) == 5:
-
-        shape = "hexagon"
-
-
-    # otherwise, we assume the shape is a circle
-
-    else:
-
-        shape = "circle"
-
-
-    # return the name of the shape
-    return shape
-
+HEIGHT = 100
 
 
 def formatFolderPic(folder):
-
     x = []
     for path in os.listdir(folder):
         picPath = str(folder) + "/" + str(path)
@@ -96,7 +34,6 @@ def formatFolderPic(folder):
 
 
 def formatPic(path):
-
     image = cv2.imread(path)
     bitwise = cv2.bitwise_not(image)
     resized = cv2.resize(bitwise, (WIDTH, HEIGHT))
@@ -105,18 +42,15 @@ def formatPic(path):
     thresh = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY)[1]
 
     imagearray = np.array(thresh)
+    #cv2.imshow('image', imagearray)
+    #cv2.waitKey(0)
     imagearray[imagearray == 255] = 1
-    imagearray = imagearray.flatten()
-    return imagearray
-
+    return imagearray.reshape(1, 10000)
 
 
 def main():
-
     formatFolderPic("EnsembleB")
-
 
 
 if __name__ == "__main__":
     main()
-

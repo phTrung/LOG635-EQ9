@@ -6,12 +6,6 @@ from matplotlib import pyplot as plt
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
-
-# Creating the Feed forward neural network
-# 1 Input layer(1, 30)
-# 1 hidden layer (1, 5)
-# 1 output layer(3, 3)
-
 def f_forward(x, w1, w2):
     # couche cache
     z1 = x.dot(w1)
@@ -49,11 +43,14 @@ def back_prop(x, y, w1, w2, learning_rate):
     a2 = sigmoid(z2)  # output of out layer
 
     d2 = (a2 - y)
-    d1 = np.multiply(np.dot(w2.transpose(), d2), 1 - np.power(a1, 2))
+    #d1 = np.multiply(np.dot(w2.transpose(), d2), 1 - np.power(a1, 2))
+    d1 = np.multiply((w2.dot((d2.transpose()))).transpose(),
+                     (np.multiply(a1, 1 - a1)))
 
     # Gradient descent to update weights
-    d_W1 = x.transpose().dot(d1)
+
     d_W2 = a1.transpose().dot(d2)
+    d_W1 = x.transpose().dot(d1)
     w1 = w1 - (learning_rate * d_W1)
     w2 = w2 - (learning_rate * d_W2)
 
@@ -102,5 +99,5 @@ def predict(x, w1, w2):
     else:
         print("Image is Triangle4.")
 
-    plt.imshow(x.reshape(5, 6))
+    plt.imshow(x.reshape(100, 100))
     plt.show()
