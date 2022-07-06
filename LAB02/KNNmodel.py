@@ -1,10 +1,12 @@
 import numpy as np
+from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 
 from LAB02 import imageProcessing
 
 
 def KNN(X,Y):
+
     neigh = KNeighborsClassifier(n_neighbors=3)
     numX = np.array(X)
     nsamples, nx, ny = numX.shape

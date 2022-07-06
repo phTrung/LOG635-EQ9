@@ -7,7 +7,7 @@ from sklearn import metrics
 
 def SVM(X,Y):
 
-    Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, Y, test_size=0.3, random_state=109)
+    Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, Y, test_size=0.2, random_state=59)
     clf = SVC(kernel='linear')
     clf.fit(Xtrain, Ytrain)
     Ypred = clf.predict(Xtest)
@@ -16,9 +16,14 @@ def SVM(X,Y):
 
 
 def main():
+
+    folder = "EnsembleB"
     #dataset
-    X = imageProcessing.formatFolderPic("EnsembleB")
-    Y = np.identity(8)
+    X = imageProcessing.formatFolderPic(folder)
+    Y = []
+
+    for i, direct in enumerate(folder):
+        Y.append(i)
 
     Xtrain, Xtest, Ytrain, Ytest, Ypred = SVM(X,Y)
 
