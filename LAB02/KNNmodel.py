@@ -6,12 +6,14 @@ from LAB02 import imageProcessing
 
 
 def KNN(X,Y):
-
+    # initialisation du model KNN
     neigh = KNeighborsClassifier(n_neighbors=3)
+    # convertis un tableau en tableau numpy
     numX = np.array(X)
     nsamples, nx, ny = numX.shape
     fx = numX.reshape((nsamples,nx*ny))
     neigh.fit(fx, Y)
+    #prediction 
     print(neigh.predict(X[1]))
 
 
