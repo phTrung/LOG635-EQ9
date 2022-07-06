@@ -52,7 +52,7 @@ def back_propagation(x, y, w1, w2, learning_rate):
     d_W2 = a1.transpose().dot(d2)
     d_W1 = x.transpose().dot(d1)
 
-    #Mise a jour des parametres
+    #Mise a jour des parametres par gradient descent
     w1 = w1 - (learning_rate * d_W1)
     w2 = w2 - (learning_rate * d_W2)
 
