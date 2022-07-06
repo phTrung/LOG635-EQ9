@@ -1,7 +1,7 @@
 import numpy as np
 import RNmodel
 import imageProcessing
-
+import pickle
 
 def main():
     #dataset
@@ -9,6 +9,12 @@ def main():
     print(len(X))
     # labels
     Y = np.identity(8)
+
+    with open("XPickle.pickle", 'wb') as f:
+        pickle.dump(X,f)
+
+    with open("YPickle.pickle", 'wb') as f:
+        pickle.dump(Y,f)
 
     w1 = RNmodel.random_weights(10000, 2000)
     w2 = RNmodel.random_weights(2000, 8)
