@@ -5,9 +5,15 @@ from sklearn import metrics
 
 
 def MLP(X, y):
+    #split des données de tests avec les données de training
     Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, y, test_size=0.2, random_state=59)
+
+    # instanciation avec les hyperparamètres
     clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1)
+
+    # training
     clf.fit(Xtrain, Ytrain)
+    # prediction
     Ypred = clf.predict(Xtest)
 
     return Xtrain, Xtest, Ytrain, Ytest, Ypred

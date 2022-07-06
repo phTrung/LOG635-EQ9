@@ -52,7 +52,7 @@ def back_propagation(x, y, w1, w2, learning_rate):
     d_W2 = a1.transpose().dot(d2)
     d_W1 = x.transpose().dot(d1)
 
-    #Mise a jour des parametres
+    #Mise a jour des parametres par gradient descent
     w1 = w1 - (learning_rate * d_W1)
     w2 = w2 - (learning_rate * d_W2)
 
@@ -62,13 +62,15 @@ def back_propagation(x, y, w1, w2, learning_rate):
 def train(x, Y, w1, w2, learning_rate=0.01, num_iterations=10):
     accuracy = []
     costlost_array = []
+
+    # on boucle pour le nombre de iteration (hyperparamètre)
     for j in range(num_iterations):
-        l = []
-        for i in range(len(x)):
-            out = forward_propagation(x[i], w1, w2)
-            l.append((loss(out, Y[i])))
-            w1, w2 = back_propagation(x[i], Y[i], w1, w2, learning_rate)
-        accuracy.append((1 - (sum(l) / len(x))) * 100)
+        l = [] # array de loss pour cette iteration
+        for i in range(len(x)): # on boucle pour chaque vecteur de pixel par image
+            out = forward_propagation(x[i], w1, w2) # propagation avant
+            l.append((loss(out, Y[i]))) # calcul de perte
+            w1, w2 = back_propagation(x[i], Y[i], w1, w2, learning_rate) # retropopagation
+        accuracy.append((1 - (sum(l) / len(x))) * 100) # on calcule et stock la précision pour cette image
         costlost_array.append(sum(l) / len(x))
     return accuracy, costlost_array, w1, w2
 
