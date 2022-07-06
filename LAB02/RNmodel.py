@@ -57,18 +57,17 @@ def back_propagation(x, y, w1, w2, learning_rate):
 
 
 def train(x, Y, w1, w2, learning_rate=0.01, num_iterations=10):
-    acc = []
-    losss = []
+    accuracy = []
+    costlost_array = []
     for j in range(num_iterations):
         l = []
         for i in range(len(x)):
             out = forward_propagation(x[i], w1, w2)
             l.append((loss(out, Y[i])))
             w1, w2 = back_propagation(x[i], Y[i], w1, w2, learning_rate)
-        print("epochs:", j + 1, "======== acc:", (1 - (sum(l) / len(x))) * 100)
-        acc.append((1 - (sum(l) / len(x))) * 100)
-        losss.append(sum(l) / len(x))
-    return acc, losss, w1, w2
+        accuracy.append((1 - (sum(l) / len(x))) * 100)
+        costlost_array.append(sum(l) / len(x))
+    return accuracy, costlost_array, w1, w2
 
 
 def predict(x, w1, w2):

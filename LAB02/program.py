@@ -1,6 +1,5 @@
 import numpy as np
 import RNmodel
-import KNNmodel
 import imageProcessing
 
 
@@ -17,7 +16,6 @@ def main():
 
     acc, loss, w1, w2 = RNmodel.train(X, Y, w1, w2, 0.01, 10)
     RNmodel.predict(X[1], w1, w2)
-    KNN.run(X,Y)
     
 
 if __name__ == "__main__":
