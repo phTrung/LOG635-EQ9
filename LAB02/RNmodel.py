@@ -2,19 +2,19 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-
+#Fonction sidmoide
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
 def forward_propagation(x, w1, w2):
     # couche cache
-    z1 = x.dot(w1)
-    a1 = sigmoid(z1)
+    z1 = x.dot(w1) #input venant du couche 1
+    a1 = sigmoid(z1) #input du couche 2
 
     # couche de sortie
-    z2 = a1.dot(w2)
-    a2 = sigmoid(z2)
+    z2 = a1.dot(w2) #input de la couche de sortie
+    a2 = sigmoid(z2) #output de la couche de sortie
     return a2
 
 
@@ -43,19 +43,22 @@ def back_propagation(x, y, w1, w2, learning_rate):
     z2 = a1.dot(w2)
     a2 = sigmoid(z2)
 
+    #Calcul d'erreur dans le couche de sortie
     d2 = (a2 - y)
     d1 = np.multiply((w2.dot((d2.transpose()))).transpose(),
                      (np.multiply(a1, 1 - a1)))
 
-    # Gradient descent pour mettre à jour les weights
+    #Gradient descent pour mettre à jour les poids
     d_W2 = a1.transpose().dot(d2)
     d_W1 = x.transpose().dot(d1)
+
+    #Mise a jour des parametres
     w1 = w1 - (learning_rate * d_W1)
     w2 = w2 - (learning_rate * d_W2)
 
     return w1, w2
 
-
+#méthode d'entrainement
 def train(x, Y, w1, w2, learning_rate=0.01, num_iterations=10):
     accuracy = []
     costlost_array = []
@@ -78,6 +81,7 @@ def predict(x, w1, w2):
         if maxm < output[0][i]:
             maxm = output[0][i]
             k = i
+    #Résultat possible de la prédiction selon la couche de sortie
     if k == 0:
         print("Image is Cercle2.")
     elif k == 1:
